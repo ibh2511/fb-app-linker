@@ -3,8 +3,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Håndter Facebook-lenker som query-parameter
-app.get("/open-facebook", (req, res) => {
-  const fbLink = req.query.link; // Lenken sendes som query-parameter, f.eks. ?link=https://facebook.com/somepage
+app.get("/fb-app-linker", (req, res) => {
+  const fbLink = req.query.link; // Lenken sendes som query-parameter, f.eks. ?link=https://facebook.com/somelink
 
   if (!fbLink || !fbLink.startsWith("https://facebook.com/")) {
     return res.status(400).send("Invalid or missing Facebook link. Make sure it starts with 'https://facebook.com/'.");
@@ -47,12 +47,12 @@ app.get("/", (req, res) => {
   res.send(`
     <html>
       <head>
-        <title>Facebook Link Opener</title>
-      </head>
+        <title>Facebook App Link Opener</title>
+      </head> 
       <body>
-        <h1>Welcome to Facebook Link Opener</h1>
+        <h1>Welcome to Facebook App Link Opener</h1>
         <p>To use this service, provide a Facebook link as a query parameter:</p>
-        <code>${serverUrl}/open-facebook?link=https://facebook.com/somepage</code>
+        <code>${serverUrl}/fb-app-linker?link=https://facebook.com/somelink</code>
         <small>IBH 🌱</small>
       </body>
     </html>
