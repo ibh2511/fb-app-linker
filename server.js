@@ -19,31 +19,47 @@ app.get("/fb-app-linker", (req, res) => {
       );
   }
 
+  // Detect platform using User-Agent
+  const userAgent = req.get("User-Agent");
+  const isAndroid = /Android/i.test(userAgent);
+  const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+
   // URL-encode the link for use in the Facebook app
   const encodedLink = encodeURIComponent(fbLink);
   const facebookAppLink = `fb://facewebmodal/f?href=${encodedLink}`;
 
+  // HTML response with conditional redirection based on the platform
   res.send(`
     <html>
       <head>
         <title>Redirecting...</title>
         <script>
-          // Attempt to open the Facebook app
-          setTimeout(() => {
-            console.log("Attempting to redirect to the Facebook app...");
-            window.location.href = "${facebookAppLink}";
-          }, 100);
+          // Check if the platform is iOS or Android
+          const isAndroid = ${isAndroid};
+          const isIOS = ${isIOS};
 
-          // Fallback to the original Facebook link after 2 seconds
-          setTimeout(() => {
-            console.log("Redirecting to the original Facebook link as fallback...");
+          if (isAndroid || isIOS) {
+            // Attempt to open the Facebook app
+            setTimeout(() => {
+              console.log("Attempting to redirect to the Facebook app...");
+              window.location.href = "${facebookAppLink}";
+            }, 100);
+
+            // Fallback to the original Facebook link after 1.5 seconds
+            setTimeout(() => {
+              console.log("Redirecting to the original Facebook link as fallback...");
+              window.location.href = "${fbLink}";
+            }, 1500);
+          } else {
+            // Directly fallback to the original Facebook link for non-mobile platforms
+            console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
             window.location.href = "${fbLink}";
-          }, 2000);
+          }
         </script>
       </head>
       <body>
-        <p>Redirecting to the Facebook app...</p>
-        <p>If it doesn't work, you will be redirected to the link in your browser.</p>
+        <p>Redirecting to the Facebook app if supported...</p>
+        <p>If not, you'll be redirected to the link in your browser.</p>
       </body>
     </html>
   `);
