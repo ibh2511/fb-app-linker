@@ -53,6 +53,7 @@ app.get("/", (req, res) => {
         <h1>Welcome to Facebook App Link Opener</h1>
         <p>To use this service, provide a Facebook link as a query parameter:</p>
         <code>${serverUrl}/fb-app-linker?link=https://facebook.com/somelink</code>
+        <br/><br/><br/>
         <small>IBH 🌱</small>
       </body>
     </html>
