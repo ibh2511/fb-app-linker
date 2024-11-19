@@ -3,7 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Handle Facebook links as a query parameter
-app.get("/fb-app-linker", (req, res) => {
+app.get("/fb-link", (req, res) => {
   const fbLink = req.query.link; // Link sent as a query parameter, e.g., ?link=https://facebook.com/somelink
 
   // Validate and allow both `facebook.com` and `www.facebook.com`
@@ -80,7 +80,7 @@ app.get("/", (req, res) => {
       <body>
         <h1>Welcome to Facebook App Link Opener</h1>
         <p>To use this service, provide a Facebook link as a query parameter:</p>
-        <code>${serverUrl}/fb-app-linker?link=https://facebook.com/somelink</code>
+        <code>${serverUrl}/fb-link?link=https://facebook.com/somelink</code>
         <br/><br/>
         <p>IBH 🌱</p>
       </body>
