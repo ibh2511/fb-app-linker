@@ -26,6 +26,10 @@ app.get("/fb-link", (req, res) => {
 
   // URL-encode the link for use in the Facebook app
   const encodedLink = encodeURIComponent(fbLink);
+
+  // The custom URI scheme `fb://facewebmodal/f?` is used to open web content inside the Facebook app.
+  // The `f?href=` parameter allows embedding a URL (e.g., https://facebook.com/events/...) 
+  // for deep linking into specific Facebook content directly within the app.
   const facebookAppLink = `fb://facewebmodal/f?href=${encodedLink}`;
 
   // HTML response with conditional redirection based on the platform
