@@ -82,7 +82,7 @@ app.get("/", (req, res) => {
         <p>To use this service, provide a Facebook link as a query parameter:</p>
         <code>${serverUrl}/fb-app-linker?link=https://facebook.com/somelink</code>
         <br/><br/>
-        <small>IBH 🌱</small>
+        <p>IBH 🌱</p>
       </body>
     </html>
   `);
