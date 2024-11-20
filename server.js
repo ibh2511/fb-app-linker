@@ -98,7 +98,7 @@ app.get("/fb-link", (req, res) => {
             setTimeout(() => {
               console.log("Redirecting to the original Facebook link as fallback...");
               window.location.href = "${resolvedLink}";
-            }, 5000);
+            }, 10000);
           } else {
             console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
             window.location.href = "${resolvedLink}";
