@@ -182,10 +182,10 @@ app.get("/fb-link", (req, res) => {
           <div class="content">
 
               <p>Du blir videresendt Facebook-appen hvis den støttes 🤖</p>
-              <p>Hvis ikke, blir du omdirigert til linken i nettleseren din.</p>
+              <p>Hvis ikke, blir du omdirigert til standard nettleser.</p>
 
               <footer>
-                  <p>Made by IBH 🌱</p>
+                  <p>Made by IBH 🦾🌱</p>
               </footer>
           </div>
       </body>
@@ -292,7 +292,7 @@ app.get("/", (req, res) => {
                 <p>This will use the environment variable <code>TARGET_FB_URL_1</code>.</p>
                 <p><b>Note:</b> Do not use both <span class="highlight">link</span> and <span class="highlight">stored_url</span> in the same request.</p>
                 <footer>
-                    <p>Made by IBH 🌱</p>
+                  <p>Made by IBH 🦾🌱</p>
                 </footer>
             </div>
         </body>
