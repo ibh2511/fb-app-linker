@@ -181,8 +181,8 @@ app.get("/fb-link", (req, res) => {
         <body>
           <div class="content">
 
-              <p>Du blir sendt Facebook-appen hvis den støttes...</p>
-              <p>Hvis ikke, blir du omdirigert til lenken i nettleseren din.</p>
+              <p>Du blir videresendt Facebook-appen hvis den støttes 🤖</p>
+              <p>Hvis ikke, blir du omdirigert til linken i nettleseren din.</p>
 
               <footer>
                   <p>Made by IBH 🌱</p>
