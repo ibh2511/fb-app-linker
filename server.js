@@ -195,7 +195,7 @@ app.get("/", (req, res) => {
     <p>Or use an environment variable by specifying its key:</p>
     <code>${serverUrl}/fb-link?stored_url=1</code>
     <p>This will use the environment variable <code>TARGET_FB_URL_1</code>.</p>
-    <p>Note: Do not use both <code>link</code> and <code>stored_url</code> in the same request.</p>
+    <p><b>Note:</b> Do not use both <i>link</i> and <i>stored_url</i> in the same request.</p>
     <footer>
         <p>Made by IBH 🌱</p>
     </footer>
