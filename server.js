@@ -196,10 +196,9 @@ app.get("/", (req, res) => {
       </head>
       <body>
           <h1>Welcome to Facebook App Link Opener</h1>
-          <p>This service allows users to quickly open Facebook links in the Facebook app by providing the link as a query parameter or referencing a 
-             pre-configured environment variable. It ensures seamless redirection and simplifies access to specific Facebook pages or content, making 
-             it a convenient tool for both developers and users looking to streamline their app navigation.
-          </p>
+          <p>This service allows users to open Facebook links in the Facebook app by providing the FB link as a query parameter or referencing a 
+             pre-configured environment variable.</p> 
+          <p>It ensures seamless redirection and simplifies access to specific Facebook pages or content</p>
           <p>To use this service, provide a Facebook link as a query parameter:</p>
           <code>${serverUrl}/fb-link?link=https://facebook.com/somelink</code>
           <p>Or use an environment variable by specifying its key:</p>
