@@ -78,9 +78,13 @@ app.get("/fb-link", (req, res) => {
 
   // HTML response with conditional redirection
   res.send(`
-    <html>
-      <head>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Redirecting...</title>
+        
         <script>
           const isAndroid = ${isAndroid};
           const isIOS = ${isIOS};
@@ -101,13 +105,88 @@ app.get("/fb-link", (req, res) => {
           }
         </script>
       </head>
-      <body>
-        // <p>Redirecting to the Facebook app if supported...</p>
-        // <p>If not, you'll be redirected to the link in your browser.</p>
+        <style>
+          body {
+              font-family: Arial, sans-serif;
+              background-color: #f9f9f9;
+              color: #333;
+              margin: 0;
+              padding: 20px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100vh;
+              box-sizing: border-box;
+          }
+          .content {
+              max-width: 800px; /* Limit content width */
+              width: 90%; /* Ensure it adapts for smaller screens */
+              margin: 0 auto;
+              text-align: center;
+          }
+          h1 {
+              color: #3b5998;
+              font-size: 2.5em;
+              margin-bottom: 20px;
+              text-align: center;
+          }
+          p {
+              font-size: 1.1em;
+              line-height: 1.6;
+              margin: 10px 0;
+              text-align: center;
+          }
+          code {
+              background-color: #eef2f7;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              padding: 5px 10px;
+              font-family: 'Courier New', Courier, monospace;
+              font-weight: 600; /* Darker font, but not bold */
+              font-size: 1em;
+              display: block;
+              margin: 10px 0;
+              color: #777;
+              word-wrap: break-word;
+          }
+          .highlight {
+              font-family: 'Courier New', Courier, monospace;
+              color: #777;
+              font-weight: bold;
+          }
+          a {
+              color: #3b5998;
+              text-decoration: none;
+              font-weight: bold;
+          }
+          a:hover {
+              text-decoration: underline;
+          }
+          footer {
+              margin-top: 20px;
+              font-size: 0.9em;
+              color: #666;
+          }
+          /* Responsive styling for mobile screens */
+          @media (max-width: 768px) {
+              body {
+                  padding: 10px;
+              }
+              h1 {
+                  font-size: 2em;
+              }
+          }
+        </style>
+        <body>
+          <div class="content">
 
-        <p>Du blir sendt Facebook-appen hvis den støttes...</p>
-        <p>Hvis ikke, blir du omdirigert til lenken i nettleseren din.</p>
+              <p>Du blir sendt Facebook-appen hvis den støttes...</p>
+              <p>Hvis ikke, blir du omdirigert til lenken i nettleseren din.</p>
 
+              <footer>
+                  <p>Made by IBH 🌱</p>
+              </footer>
+          </div>
       </body>
     </html>
   `);
