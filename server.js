@@ -102,8 +102,12 @@ app.get("/fb-link", (req, res) => {
         </script>
       </head>
       <body>
-        <p>Redirecting to the Facebook app if supported...</p>
-        <p>If not, you'll be redirected to the link in your browser.</p>
+        // <p>Redirecting to the Facebook app if supported...</p>
+        // <p>If not, you'll be redirected to the link in your browser.</p>
+
+        <p>Du blir sendt Facebook-appen hvis den støttes...</p>
+        <p>Hvis ikke, blir du omdirigert til lenken i nettleseren din.</p>
+
       </body>
     </html>
   `);
@@ -128,6 +132,7 @@ app.get("/", (req, res) => {
         <code>${serverUrl}/fb-link?stored_url=1</code>
         <p>This will use the environment variable <code>TARGET_FB_URL_1</code>.</p>
         <p>Note: Do not use both <code>link</code> and <code>stored_url</code> in the same request.</p>
+        <p>Made by IBH 🌱 </p>
       </body>
     </html>
   `);
