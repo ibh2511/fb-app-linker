@@ -69,6 +69,8 @@ app.get("/fb-link", (req, res) => {
   const userAgent = req.get("User-Agent");
   const isAndroid = /Android/i.test(userAgent);
   const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+  const isFacebookApp = /FBAV|FBAN/i.test(userAgent); // Checks if it's Facebook App
+
 
   // URL-encode the link for use in the Facebook app
   const encodedLink = encodeURIComponent(resolvedLink);
@@ -88,8 +90,9 @@ app.get("/fb-link", (req, res) => {
         <script>
           const isAndroid = ${isAndroid};
           const isIOS = ${isIOS};
+          const isFacebookApp = ${isFacebookApp};
 
-          if (isAndroid || isIOS) {
+          if ((isAndroid || isIOS) && !isFacebookApp) {
             setTimeout(() => {
               console.log("Attempting to redirect to the Facebook app...");
               window.location.href = "${facebookAppLink}";
@@ -185,7 +188,7 @@ app.get("/fb-link", (req, res) => {
               <p>Hvis ikke, blir du omdirigert til standard nettleser.</p>
 
               <footer>
-                  <p>Made by IBH 🦾🌱</p>
+                  <p>Made by IBH 🌱</p>
               </footer>
           </div>
       </body>
@@ -292,7 +295,7 @@ app.get("/", (req, res) => {
                 <p>This will use the environment variable <code>TARGET_FB_URL_1</code>.</p>
                 <p><b>Note:</b> Do not use both <span class="highlight">link</span> and <span class="highlight">stored_url</span> in the same request.</p>
                 <footer>
-                  <p>Made by IBH 🦾🌱</p>
+                  <p>Made by IBH 🌱</p>
                 </footer>
             </div>
         </body>
