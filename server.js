@@ -126,88 +126,94 @@ app.get("/", (req, res) => {
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Facebook App Link Opener</title>
-          <style>
+        <style>
+          body {
+              font-family: Arial, sans-serif;
+              background-color: #f9f9f9;
+              color: #333;
+              margin: 0;
+              padding: 20px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100vh;
+              box-sizing: border-box;
+          }
+          .content {
+              max-width: 800px; /* Limit content width */
+              width: 90%; /* Ensure it adapts for smaller screens */
+              margin: 0 auto;
+              text-align: center;
+          }
+          h1 {
+              color: #3b5998;
+              font-size: 2.5em;
+              margin-bottom: 20px;
+              text-align: center;
+          }
+          p {
+              font-size: 1.1em;
+              line-height: 1.6;
+              margin: 10px 0;
+              text-align: center;
+          }
+          code {
+              background-color: #eef2f7;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              padding: 5px 10px;
+              font-family: 'Courier New', Courier, monospace;
+              font-weight: 600; /* Darker font, but not bold */
+              font-size: 1em;
+              display: block;
+              margin: 10px 0;
+              color: #777;
+              word-wrap: break-word;
+          }
+          .highlight {
+              font-family: 'Courier New', Courier, monospace;
+              color: #777;
+              font-weight: bold;
+          }
+          a {
+              color: #3b5998;
+              text-decoration: none;
+              font-weight: bold;
+          }
+          a:hover {
+              text-decoration: underline;
+          }
+          footer {
+              margin-top: 20px;
+              font-size: 0.9em;
+              color: #666;
+          }
+          /* Responsive styling for mobile screens */
+          @media (max-width: 768px) {
               body {
-                  font-family: Arial, sans-serif;
-                  background-color: #f9f9f9;
-                  color: #333;
-                  margin: 0;
-                  padding: 20px;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  justify-content: center;
-                  min-height: 100vh;
-                  box-sizing: border-box;
+                  padding: 10px;
               }
               h1 {
-                  color: #3b5998;
-                  font-size: 2.5em;
-                  margin-bottom: 20px;
-                  text-align: center;
+                  font-size: 2em;
               }
-              p {
-                  font-size: 1.1em;
-                  line-height: 1.6;
-                  margin: 10px 0;
-                  text-align: center;
-              }
-              code {
-                  background-color: #eef2f7;
-                  border: 1px solid #ccc;
-                  border-radius: 5px;
-                  padding: 5px 10px;
-                  font-family: 'Courier New', Courier, monospace;
-                  font-weight: 600; /* Darker font, but not bold */
-                  font-size: 1em;
-                  display: block;
-                  margin: 10px 0;
-                  color: #777;
-                  word-wrap: break-word;
-              }
-              .highlight {
-                  font-family: 'Courier New', Courier, monospace;
-                  color: #777;
-                  font-weight: bold;
-              }
-              a {
-                  color: #3b5998;
-                  text-decoration: none;
-                  font-weight: bold;
-              }
-              a:hover {
-                  text-decoration: underline;
-              }
-              footer {
-                  margin-top: 20px;
-                  font-size: 0.9em;
-                  color: #666;
-              }
-              /* Responsive styling for mobile screens */
-              @media (max-width: 768px) {
-                  body {
-                      padding: 10px;
-                  }
-                  h1 {
-                      font-size: 2em;
-                  }
-              }
-          </style>
-      </head>
-      <body>
-          <h1>Welcome to Facebook App Link Opener</h1>
-          <p>This service allows users to open Facebook links in the Facebook app by providing a FB link as a query parameter<br> or referencing a 
-             pre-configured environment variable.<br>It ensures seamless redirection and simplifies access to specific Facebook pages or content</p>
-          <p>To use this service, provide a Facebook link as a query parameter:</p>
-          <code>${serverUrl}/fb-link?link=https://facebook.com/somelink</code>
-          <p>Or use an environment variable by specifying its key:</p>
-          <code>${serverUrl}/fb-link?stored_url=1</code>
-          <p>This will use the environment variable <code>TARGET_FB_URL_1</code>.</p>
-          <p><b>Note:</b> Do not use both <span class="highlight">link</span> and <span class="highlight">stored_url</span> in the same request.</p>
-          <footer>
-              <p>Made by IBH 🌱</p>
-          </footer>
-      </body>
+          }
+        </style>
+        <body>
+            <div class="content">
+                <h1>Welcome to Facebook App Link Opener</h1>
+                <p>This service allows users to open Facebook links in the Facebook app by providing a FB link as a query parameter<br> or referencing a 
+                   pre-configured environment variable. It ensures seamless redirection and simplifies access to specific Facebook pages or content.
+                   To use this service, provide a Facebook link as a query parameter:</p>
+                <code>${serverUrl}/fb-link?link=https://facebook.com/somelink</code>
+                <p>Or use an environment variable by specifying its key:</p>
+                <code>${serverUrl}/fb-link?stored_url=1</code>
+                <p>This will use the environment variable <code>TARGET_FB_URL_1</code>.</p>
+                <p><b>Note:</b> Do not use both <span class="highlight">link</span> and <span class="highlight">stored_url</span> in the same request.</p>
+                <footer>
+                    <p>Made by IBH 🌱</p>
+                </footer>
+            </div>
+        </body>
       </html>
   `);
 });
