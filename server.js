@@ -2,20 +2,66 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Handle Facebook links as a query parameter
+// Handle Facebook links via query parameter or environment variables
 app.get("/fb-link", (req, res) => {
-  const fbLink = req.query.link; // Link sent as a query parameter, e.g., ?link=https://facebook.com/somelink
+  const fbLink = req.query.link; // Query parameter for direct URL
+  const storedUrlKey = req.query.stored_url; // Query parameter for environment variable key, e.g., ?stored_url=1
 
-  // Validate and allow both `facebook.com` and `www.facebook.com`
-  if (
-    !fbLink ||
-    (!fbLink.startsWith("https://facebook.com/") &&
-      !fbLink.startsWith("https://www.facebook.com/"))
-  ) {
+  // Ensure both `link` and `stored_url` are not used simultaneously
+  if (fbLink && storedUrlKey) {
     return res
       .status(400)
       .send(
-        "Invalid or missing Facebook link. Make sure it starts with 'https://facebook.com/' or 'https://www.facebook.com/'."
+        "Invalid request. Use either `link` or `stored_url`, but not both at the same time."
+      );
+  }
+
+  let resolvedLink;
+
+  // If `link` is provided, validate it
+  if (fbLink) {
+    if (
+      !fbLink.startsWith("https://facebook.com/") &&
+      !fbLink.startsWith("https://www.facebook.com/")
+    ) {
+      return res
+        .status(400)
+        .send(
+          "Invalid Facebook link. Make sure it starts with 'https://facebook.com/' or 'https://www.facebook.com/'."
+        );
+    }
+    resolvedLink = fbLink;
+  }
+
+  // If `stored_url` is provided, fetch the corresponding dynamic environment variable
+  if (storedUrlKey) {
+    const envVariableName = `TARGET_FB_URL_${storedUrlKey}`;
+    resolvedLink = process.env[envVariableName];
+    if (!resolvedLink) {
+      return res
+        .status(400)
+        .send(
+          `Environment variable '${envVariableName}' is not defined on the server.`
+        );
+    }
+    if (
+      !resolvedLink.startsWith("https://facebook.com/") &&
+      !resolvedLink.startsWith("https://www.facebook.com/")
+    ) {
+      return res
+        .status(400)
+        .send(
+          `The URL in environment variable '${envVariableName}' is invalid. It must start with 'https://facebook.com/' or 'https://www.facebook.com/'.`
+        );
+    }
+  }
+
+  // If neither `link` nor `stored_url` are provided, return an error
+  if (!resolvedLink) {
+    return res
+      .status(400)
+      .send(
+        "Missing required parameter. Provide either `link` query parameter or a `stored_url` query parameter to use an environment variable."
       );
   }
 
@@ -25,39 +71,33 @@ app.get("/fb-link", (req, res) => {
   const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
 
   // URL-encode the link for use in the Facebook app
-  const encodedLink = encodeURIComponent(fbLink);
+  const encodedLink = encodeURIComponent(resolvedLink);
 
-  // The custom URI scheme `fb://facewebmodal/f?` is used to open web content inside the Facebook app.
-  // The `f?href=` parameter allows embedding a URL (e.g., https://facebook.com/events/...) 
-  // for deep linking into specific Facebook content directly within the app.
+  // The custom URI scheme for Facebook app
   const facebookAppLink = `fb://facewebmodal/f?href=${encodedLink}`;
 
-  // HTML response with conditional redirection based on the platform
+  // HTML response with conditional redirection
   res.send(`
     <html>
       <head>
         <title>Redirecting...</title>
         <script>
-          // Check if the platform is iOS or Android
           const isAndroid = ${isAndroid};
           const isIOS = ${isIOS};
 
           if (isAndroid || isIOS) {
-            // Attempt to open the Facebook app
             setTimeout(() => {
               console.log("Attempting to redirect to the Facebook app...");
               window.location.href = "${facebookAppLink}";
             }, 100);
 
-            // Fallback to the original Facebook link after 1.5 seconds
             setTimeout(() => {
               console.log("Redirecting to the original Facebook link as fallback...");
-              window.location.href = "${fbLink}";
+              window.location.href = "${resolvedLink}";
             }, 1500);
           } else {
-            // Directly fallback to the original Facebook link for non-mobile platforms
             console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
-            window.location.href = "${fbLink}";
+            window.location.href = "${resolvedLink}";
           }
         </script>
       </head>
@@ -71,7 +111,6 @@ app.get("/fb-link", (req, res) => {
 
 // Root route for usage instructions with dynamic server URL
 app.get("/", (req, res) => {
-  // Dynamically fetch the current server URL
   const protocol = req.protocol;
   const host = req.get("host");
   const serverUrl = `${protocol}://${host}`;
@@ -85,8 +124,10 @@ app.get("/", (req, res) => {
         <h1>Welcome to Facebook App Link Opener</h1>
         <p>To use this service, provide a Facebook link as a query parameter:</p>
         <code>${serverUrl}/fb-link?link=https://facebook.com/somelink</code>
-        <br/><br/>
-        <p>IBH 🌱</p>
+        <p>Or use an environment variable by specifying its key:</p>
+        <code>${serverUrl}/fb-link?stored_url=1</code>
+        <p>This will use the environment variable <code>TARGET_FB_URL_1</code>.</p>
+        <p>Note: Do not use both <code>link</code> and <code>stored_url</code> in the same request.</p>
       </body>
     </html>
   `);
@@ -96,3 +137,4 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
