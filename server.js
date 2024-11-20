@@ -98,7 +98,7 @@ app.get("/fb-link", (req, res) => {
             setTimeout(() => {
               console.log("Redirecting to the original Facebook link as fallback...");
               window.location.href = "${resolvedLink}";
-            }, 1500);
+            }, 5000);
           } else {
             console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
             window.location.href = "${resolvedLink}";
@@ -106,77 +106,78 @@ app.get("/fb-link", (req, res) => {
         </script>
       </head>
         <style>
-          body {
-              font-family: Arial, sans-serif;
-              background-color: #f9f9f9;
-              color: #333;
-              margin: 0;
-              padding: 20px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              min-height: 100vh;
-              box-sizing: border-box;
-          }
-          .content {
-              max-width: 800px; /* Limit content width */
-              width: 90%; /* Ensure it adapts for smaller screens */
-              margin: 0 auto;
-              text-align: center;
-          }
-          h1 {
-              color: #3b5998;
-              font-size: 2.5em;
-              margin-bottom: 20px;
-              text-align: center;
-          }
-          p {
-              font-size: 1.1em;
-              line-height: 1.6;
-              margin: 10px 0;
-              text-align: center;
-          }
-          code {
-              background-color: #eef2f7;
-              border: 1px solid #ccc;
-              border-radius: 5px;
-              padding: 5px 10px;
-              font-family: 'Courier New', Courier, monospace;
-              font-weight: 600; /* Darker font, but not bold */
-              font-size: 1em;
-              display: block;
-              margin: 10px 0;
-              color: #777;
-              word-wrap: break-word;
-          }
-          .highlight {
-              font-family: 'Courier New', Courier, monospace;
-              color: #777;
-              font-weight: bold;
-          }
-          a {
-              color: #3b5998;
-              text-decoration: none;
-              font-weight: bold;
-          }
-          a:hover {
-              text-decoration: underline;
-          }
-          footer {
-              margin-top: 20px;
-              font-size: 0.9em;
-              color: #666;
-          }
-          /* Responsive styling for mobile screens */
-          @media (max-width: 768px) {
-              body {
-                  padding: 10px;
-              }
-              h1 {
-                  font-size: 2em;
-              }
-          }
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f9f9f9;
+                color: #333;
+                margin: 0;
+                display: flex;
+                flex-direction: column; /* Stack content vertically */
+                justify-content: space-between; /* Space out content and footer */
+                min-height: 100vh; /* Ensure body takes the full screen height */
+                box-sizing: border-box;
+            }
+            .content {
+                max-width: 800px; /* Limit content width */
+                width: 90%; /* Ensure it adapts for smaller screens */
+                margin: 20px auto 0; /* Add space on top, none on bottom */
+                text-align: center;
+            }
+            h1 {
+                color: #3b5998;
+                font-size: 2.5em;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            p {
+                font-size: 1.1em;
+                line-height: 1.6;
+                margin: 10px 0;
+                text-align: center;
+            }
+            code {
+                background-color: #eef2f7;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                padding: 5px 10px;
+                font-family: 'Courier New', Courier, monospace;
+                font-weight: 600; /* Darker font, but not bold */
+                font-size: 1em;
+                display: block;
+                margin: 10px 0;
+                color: #777;
+                word-wrap: break-word;
+            }
+            .highlight {
+                font-family: 'Courier New', Courier, monospace;
+                color: #777;
+                font-weight: bold;
+            }
+            a {
+                color: #3b5998;
+                text-decoration: none;
+                font-weight: bold;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            footer {
+                margin-top: 20px;
+                font-size: 0.9em;
+                color: #666;
+                text-align: center;
+            }
+            /* Responsive styling for mobile screens */
+            @media (max-width: 768px) {
+                body {
+                    padding: 10px;
+                }
+                h1 {
+                    font-size: 2em;
+                }
+            }
         </style>
+
         <body>
           <div class="content">
 
@@ -188,6 +189,7 @@ app.get("/fb-link", (req, res) => {
               </footer>
           </div>
       </body>
+      
     </html>
   `);
 });
