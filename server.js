@@ -71,12 +71,29 @@ app.get("/fb-link", (req, res) => {
   const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
   const isFacebookApp = /FBAV|FBAN/i.test(userAgent); // Checks if it's Facebook App
 
+  // Dynamically construct Facebook deep link based on the resolved link
+  let facebookAppLink;
+  if (resolvedLink.includes("/events/")) {
+    facebookAppLink = resolvedLink.replace(
+      "https://facebook.com/events/",
+      "fb://event/"
+    );
+  } else if (resolvedLink.includes("/groups/")) {
+    facebookAppLink = resolvedLink.replace(
+      "https://facebook.com/groups/",
+      "fb://group/"
+    );
+  } else if (resolvedLink.includes("/pages/")) {
+    facebookAppLink = resolvedLink.replace(
+      "https://facebook.com/pages/",
+      "fb://page/"
+    );
+  } else {
+    facebookAppLink = resolvedLink.replace("https://facebook.com", "fb://");
+  }
 
-  // URL-encode the link for use in the Facebook app
+  // URL-encode the resolved link for safe usage
   const encodedLink = encodeURIComponent(resolvedLink);
-
-  // The custom URI scheme for Facebook app
-  const facebookAppLink = `fb://facewebmodal/f?href=${encodedLink}`;
 
   // HTML response with conditional redirection
   res.send(`
@@ -138,46 +155,11 @@ app.get("/fb-link", (req, res) => {
                 margin: 10px 0;
                 text-align: center;
             }
-            code {
-                background-color: #eef2f7;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                padding: 5px 10px;
-                font-family: 'Courier New', Courier, monospace;
-                font-weight: 600; /* Darker font, but not bold */
-                font-size: 1em;
-                display: block;
-                margin: 10px 0;
-                color: #777;
-                word-wrap: break-word;
-            }
-            .highlight {
-                font-family: 'Courier New', Courier, monospace;
-                color: #777;
-                font-weight: bold;
-            }
-            a {
-                color: #3b5998;
-                text-decoration: none;
-                font-weight: bold;
-            }
-            a:hover {
-                text-decoration: underline;
-            }
             footer {
                 margin-top: 20px;
                 font-size: 0.9em;
                 color: #666;
                 text-align: center;
-            }
-            /* Responsive styling for mobile screens */
-            @media (max-width: 768px) {
-                body {
-                    padding: 10px;
-                }
-                h1 {
-                    font-size: 2em;
-                }
             }
         </style>
 
@@ -196,6 +178,7 @@ app.get("/fb-link", (req, res) => {
     </html>
   `);
 });
+
 
 // Root route for usage instructions with dynamic server URL
 app.get("/", (req, res) => {
