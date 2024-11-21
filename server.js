@@ -108,13 +108,24 @@ app.get("/fb-link", (req, res) => {
         <title>Redirecting...</title>
         
         <script>
-          const isAndroid = ${isAndroid};
-          const isIOS = ${isIOS};
-          const isFacebookApp = ${isFacebookApp};
+const isAndroid = /Android/i.test(userAgent);
+const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+const isFacebookApp = /FBAV|FBAN/i.test(userAgent);
 
-          if ((isAndroid || isIOS) && !isFacebookApp) {
-          const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
+res.send(`
+  <html>
+    <head>
+      <title>Redirecting...</title>
+    </head>
+      <body>
+        <script>
+            const isAndroid = {{isAndroid}};
+            const isIOS = {{isIOS}};
+            const isFacebookApp = {{isFacebookApp}};
+          
+            if ((isAndroid || isIOS) && !isFacebookApp) {
+              const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+          
               if (/Instagram/i.test(userAgent)) {
                 console.log("Instagram in-app browser detected. Prompting user...");
                 document.body.innerHTML = `
@@ -123,22 +134,26 @@ app.get("/fb-link", (req, res) => {
                 `;
               } else {
                 // Attempt to redirect to Facebook app
-                setTimeout(() => {
+                setTimeout(function () {
                   console.log("Attempting to redirect to the Facebook app...");
-                  window.location.href = `${facebookAppLink}`;
+                  window.location.href = "${facebookAppLink}";
                 }, 1000);
-            
+          
                 // Fallback to the original link if the Facebook app does not open
-                setTimeout(() => {
+                setTimeout(function () {
                   console.log("Redirecting to the original Facebook link as fallback...");
-                  window.location.href = `${resolvedLink}`;
+                  window.location.href = "${resolvedLink}";
                 }, 10000);
               }
+            } else {
+              console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
+              window.location.href = "${resolvedLink}";
+            }
+          </script>
+        </body>
+      </html>
+    `);
 
-        } else {
-          console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
-          window.location.href = `${resolvedLink}`;
-        }
 
         </script>
       </head>
