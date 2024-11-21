@@ -108,6 +108,7 @@ app.get("/fb-link", (req, res) => {
         <title>Redirecting...</title>
         
         <script>
+
         const isAndroid = /Android/i.test(userAgent);
         const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
         const isFacebookApp = /FBAV|FBAN/i.test(userAgent);
@@ -120,24 +121,26 @@ app.get("/fb-link", (req, res) => {
             </head>
             <body>
               <script>
-                const isAndroid = ${isAndroid}; // Server-side variable injected
-                const isIOS = ${isIOS}; // Server-side variable injected
-                const isFacebookApp = ${isFacebookApp}; // Server-side variable injected
-        
+                const isAndroid = ${JSON.stringify(isAndroid)};
+                const isIOS = ${JSON.stringify(isIOS)};
+                const isFacebookApp = ${JSON.stringify(isFacebookApp)};
+              
                 if ((isAndroid || isIOS) && !isFacebookApp) {
                   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        
+              
                   if (/Instagram/i.test(userAgent)) {
                     console.log("Instagram in-app browser detected. Prompting user...");
-                    document.body.innerHTML = '<p>Åpne denne lenken i en nettleser for å fortsette:</p>' +
-                      '<a href="${resolvedLink}" target="_blank">${resolvedLink}</a>';
+                    document.body.innerHTML = \`
+                      <p>Åpne denne lenken i en nettleser for å fortsette:</p>
+                      <a href="${resolvedLink}" target="_blank">${resolvedLink}</a>
+                    \`;
                   } else {
                     // Attempt to redirect to Facebook app
                     setTimeout(function () {
                       console.log("Attempting to redirect to the Facebook app...");
                       window.location.href = "${facebookAppLink}";
                     }, 1000);
-        
+              
                     // Fallback to the original link if the Facebook app does not open
                     setTimeout(function () {
                       console.log("Redirecting to the original Facebook link as fallback...");
@@ -152,6 +155,7 @@ app.get("/fb-link", (req, res) => {
             </body>
           </html>
         `);
+
 
       </script>
       </head>
