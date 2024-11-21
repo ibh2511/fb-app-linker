@@ -2,23 +2,18 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Handle Facebook links via query parameter or environment variables
 app.get("/fb-link", (req, res) => {
-  const fbLink = req.query.link; // Query parameter for direct URL
-  const storedUrlKey = req.query.stored_url; // Query parameter for environment variable key, e.g., ?stored_url=1
+  const fbLink = req.query.link;
+  const storedUrlKey = req.query.stored_url;
 
-  // Ensure both `link` and `stored_url` are not used simultaneously
   if (fbLink && storedUrlKey) {
     return res
       .status(400)
-      .send(
-        "Invalid request. Use either `link` or `stored_url`, but not both at the same time."
-      );
+      .send("Invalid request. Use either `link` or `stored_url`, but not both at the same time.");
   }
 
   let resolvedLink;
 
-  // If `link` is provided, validate it
   if (fbLink) {
     if (
       !fbLink.startsWith("https://facebook.com/") &&
@@ -33,16 +28,13 @@ app.get("/fb-link", (req, res) => {
     resolvedLink = fbLink;
   }
 
-  // If `stored_url` is provided, fetch the corresponding dynamic environment variable
   if (storedUrlKey) {
     const envVariableName = `TARGET_FB_URL_${storedUrlKey}`;
     resolvedLink = process.env[envVariableName];
     if (!resolvedLink) {
       return res
         .status(400)
-        .send(
-          `Environment variable '${envVariableName}' is not defined on the server.`
-        );
+        .send(`Environment variable '${envVariableName}' is not defined on the server.`);
     }
     if (
       !resolvedLink.startsWith("https://facebook.com/") &&
@@ -56,7 +48,6 @@ app.get("/fb-link", (req, res) => {
     }
   }
 
-  // If neither `link` nor `stored_url` are provided, return an error
   if (!resolvedLink) {
     return res
       .status(400)
@@ -65,142 +56,105 @@ app.get("/fb-link", (req, res) => {
       );
   }
 
-  // Detect platform using User-Agent
   const userAgent = req.get("User-Agent");
   const isAndroid = /Android/i.test(userAgent);
   const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
-  const isFacebookApp = /FBAV|FBAN/i.test(userAgent); // Checks if it's Facebook App
-  
-  // Dynamically construct the Facebook deep link based on the resolved link
+  const isFacebookApp = /FBAV|FBAN/i.test(userAgent);
+
   let facebookAppLink;
   if (resolvedLink.includes("/events/")) {
-    // Event-specific deep link
     facebookAppLink = resolvedLink.replace(
       "https://facebook.com/events/",
       "fb://event/"
     );
   } else if (resolvedLink.includes("/groups/")) {
-    // Group-specific deep link
     facebookAppLink = resolvedLink.replace(
       "https://facebook.com/groups/",
       "fb://group/"
     );
   } else if (resolvedLink.includes("/pages/")) {
-    // Page-specific deep link
     facebookAppLink = resolvedLink.replace(
       "https://facebook.com/pages/",
       "fb://page/"
     );
   } else {
-    // Generic fallback deep link
-    const encodedLink = encodeURIComponent(resolvedLink); // URL-encode the resolved link
+    const encodedLink = encodeURIComponent(resolvedLink);
     facebookAppLink = `fb://facewebmodal/f?href=${encodedLink}`;
   }
 
-
-  // HTML response with conditional redirection
   res.send(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Redirecting...</title>
-        </head>
-        <body>
-          <script>
-            // Server-side injected variables
-            const isAndroid = ${JSON.stringify(isAndroid)};
-            const isIOS = ${JSON.stringify(isIOS)};
-            const isFacebookApp = ${JSON.stringify(isFacebookApp)};
-            const resolvedLink = "${resolvedLink}";
-            const facebookAppLink = "${facebookAppLink}";
-    
-            if ((isAndroid || isIOS) && !isFacebookApp) {
-              const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    
-              if (/Instagram/i.test(userAgent)) {
-                console.log("Instagram in-app browser detected. Prompting user...");
-                document.body.innerHTML = \`
+    <!DOCTYPE html>
+    <html lang="no">
+      <head>
+        <title>Redirecting...</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+          }
+          .content {
+            text-align: center;
+          }
+          p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 10px 0;
+          }
+          footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+          }
+        </style>
+      </head>
+      <body>
+        <script>
+          const isAndroid = ${JSON.stringify(isAndroid)};
+          const isIOS = ${JSON.stringify(isIOS)};
+          const isFacebookApp = ${JSON.stringify(isFacebookApp)};
+          const resolvedLink = "${resolvedLink}";
+          const facebookAppLink = "${facebookAppLink}";
+
+          if ((isAndroid || isIOS) && !isFacebookApp) {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            if (/Instagram/i.test(userAgent)) {
+              document.body.innerHTML = \`
+                <div class="content">
                   <p>Åpne denne lenken i en nettleser for å fortsette:</p>
                   <a href="\${resolvedLink}" target="_blank">\${resolvedLink}</a>
-                \`;
-              } else {
-                // Attempt to redirect to Facebook app
-                setTimeout(function () {
-                  console.log("Attempting to redirect to the Facebook app...");
-                  window.location.href = facebookAppLink;
-                }, 1000);
-    
-                // Fallback to the original link if the Facebook app does not open
-                setTimeout(function () {
-                  console.log("Redirecting to the original Facebook link as fallback...");
-                  window.location.href = resolvedLink;
-                }, 10000);
-              }
+                </div>
+              \`;
             } else {
-              console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
-              window.location.href = resolvedLink;
-            }
-          </script>
-        </body>
-      </html>
-    `);
+              setTimeout(() => {
+                window.location.href = facebookAppLink;
+              }, 1000);
 
-      </script>
-      </head>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f9f9f9;
-                color: #333;
-                margin: 0;
-                display: flex;
-                flex-direction: column; /* Stack content vertically */
-                justify-content: space-between; /* Space out content and footer */
-                min-height: 100vh; /* Ensure body takes the full screen height */
-                box-sizing: border-box;
+              setTimeout(() => {
+                window.location.href = resolvedLink;
+              }, 10000);
             }
-            .content {
-                max-width: 800px; /* Limit content width */
-                width: 90%; /* Ensure it adapts for smaller screens */
-                margin: 20px auto 0; /* Add space on top, none on bottom */
-                text-align: center;
-            }
-            h1 {
-                color: #3b5998;
-                font-size: 2.5em;
-                margin-bottom: 20px;
-                text-align: center;
-            }
-            p {
-                font-size: 1.1em;
-                line-height: 1.6;
-                margin: 10px 0;
-                text-align: center;
-            }
-            footer {
-                margin-top: 20px;
-                font-size: 0.9em;
-                color: #666;
-                text-align: center;
-            }
-        </style>
-
-        <body>
-          <div class="content">
-
-              <p>Du blir videresendt Facebook-appen hvis den støttes 🤖</p>
-              <p>Hvis ikke, blir du omdirigert til standard nettleser.</p>
-
-              <footer>
-                  <p>Made by IBH 🌱</p>
-              </footer>
-          </div>
+          } else {
+            window.location.href = resolvedLink;
+          }
+        </script>
+        <div class="content">
+          <p>Du blir videresendt til Facebook-appen hvis den støttes 🤖</p>
+          <p>Hvis ikke, blir du omdirigert til standard nettleser.</p>
+          <footer>
+            <p>Made by IBH 🌱</p>
+          </footer>
+        </div>
       </body>
-      
     </html>
   `);
 });
-
 
 // Root route for usage instructions with dynamic server URL
 app.get("/", (req, res) => {
