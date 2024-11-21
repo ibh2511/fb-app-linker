@@ -108,54 +108,52 @@ app.get("/fb-link", (req, res) => {
         <title>Redirecting...</title>
         
         <script>
-const isAndroid = /Android/i.test(userAgent);
-const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
-const isFacebookApp = /FBAV|FBAN/i.test(userAgent);
+        const isAndroid = /Android/i.test(userAgent);
+        const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+        const isFacebookApp = /FBAV|FBAN/i.test(userAgent);
 
-res.send(`
-  <html>
-    <head>
-      <title>Redirecting...</title>
-    </head>
-      <body>
-        <script>
-            const isAndroid = {{isAndroid}};
-            const isIOS = {{isIOS}};
-            const isFacebookApp = {{isFacebookApp}};
-          
-            if ((isAndroid || isIOS) && !isFacebookApp) {
-              const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-          
-              if (/Instagram/i.test(userAgent)) {
-                console.log("Instagram in-app browser detected. Prompting user...");
-                document.body.innerHTML = `
-                  <p>Åpne denne lenken i en nettleser for å fortsette:</p>
-                  <a href="${resolvedLink}" target="_blank">${resolvedLink}</a>
-                `;
-              } else {
-                // Attempt to redirect to Facebook app
-                setTimeout(function () {
-                  console.log("Attempting to redirect to the Facebook app...");
-                  window.location.href = "${facebookAppLink}";
-                }, 1000);
-          
-                // Fallback to the original link if the Facebook app does not open
-                setTimeout(function () {
-                  console.log("Redirecting to the original Facebook link as fallback...");
+        res.send(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Redirecting...</title>
+            </head>
+            <body>
+              <script>
+                const isAndroid = ${isAndroid}; // Server-side variable injected
+                const isIOS = ${isIOS}; // Server-side variable injected
+                const isFacebookApp = ${isFacebookApp}; // Server-side variable injected
+        
+                if ((isAndroid || isIOS) && !isFacebookApp) {
+                  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        
+                  if (/Instagram/i.test(userAgent)) {
+                    console.log("Instagram in-app browser detected. Prompting user...");
+                    document.body.innerHTML = '<p>Åpne denne lenken i en nettleser for å fortsette:</p>' +
+                      '<a href="${resolvedLink}" target="_blank">${resolvedLink}</a>';
+                  } else {
+                    // Attempt to redirect to Facebook app
+                    setTimeout(function () {
+                      console.log("Attempting to redirect to the Facebook app...");
+                      window.location.href = "${facebookAppLink}";
+                    }, 1000);
+        
+                    // Fallback to the original link if the Facebook app does not open
+                    setTimeout(function () {
+                      console.log("Redirecting to the original Facebook link as fallback...");
+                      window.location.href = "${resolvedLink}";
+                    }, 10000);
+                  }
+                } else {
+                  console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
                   window.location.href = "${resolvedLink}";
-                }, 10000);
-              }
-            } else {
-              console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
-              window.location.href = "${resolvedLink}";
-            }
-          </script>
-        </body>
-      </html>
-    `);
+                }
+              </script>
+            </body>
+          </html>
+        `);
 
-
-        </script>
+      </script>
       </head>
         <style>
             body {
