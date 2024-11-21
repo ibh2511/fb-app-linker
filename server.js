@@ -71,6 +71,9 @@ app.get("/fb-link", (req, res) => {
   const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
   const isFacebookApp = /FBAV|FBAN/i.test(userAgent); // Checks if it's Facebook App
 
+  // URL-encode the resolved link for safe usage
+  const encodedLink = encodeURIComponent(resolvedLink);
+
   // Dynamically construct Facebook deep link based on the resolved link
   let facebookAppLink;
   if (resolvedLink.includes("/events/")) {
@@ -89,11 +92,9 @@ app.get("/fb-link", (req, res) => {
       "fb://page/"
     );
   } else {
-    facebookAppLink = resolvedLink.replace("https://facebook.com", "fb://");
+    // Use the encoded link for generic cases
+    facebookAppLink = `fb://facewebmodal/f?href=${encodedLink}`;
   }
-
-  // URL-encode the resolved link for safe usage
-  const encodedLink = encodeURIComponent(resolvedLink);
 
   // HTML response with conditional redirection
   res.send(`
@@ -104,26 +105,38 @@ app.get("/fb-link", (req, res) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Redirecting...</title>
         
-        <script>
-          const isAndroid = ${isAndroid};
-          const isIOS = ${isIOS};
-          const isFacebookApp = ${isFacebookApp};
+    <script>
+        const isAndroid = ${JSON.stringify(isAndroid)};
+        const isIOS = ${JSON.stringify(isIOS)};
+        const isFacebookApp = ${JSON.stringify(isFacebookApp)};
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        const resolvedLink = "${resolvedLink}";
+        const facebookAppLink = "${facebookAppLink}";
 
-          if ((isAndroid || isIOS) && !isFacebookApp) {
-            setTimeout(() => {
-              console.log("Attempting to redirect to the Facebook app...");
-              window.location.href = "${facebookAppLink}";
-            }, 100);
+        if (/Instagram/i.test(userAgent)) {
+          // Instagram in-app browser detected
+          document.body.innerHTML = \`
+            <p>Åpne denne lenken i nettleseren din for å fortsette:</p>
+            <a href="\${resolvedLink}" target="_blank" rel="noopener noreferrer">\${resolvedLink}</a>
+          \`;
+        } else if ((isAndroid || isIOS) && !isFacebookApp) {
+          // Redirect to the Facebook app
+          setTimeout(() => {
+            console.log("Attempting to redirect to the Facebook app...");
+            window.location.href = facebookAppLink;
+          }, 100);
 
-            setTimeout(() => {
-              console.log("Redirecting to the original Facebook link as fallback...");
-              window.location.href = "${resolvedLink}";
-            }, 10000);
-          } else {
-            console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
-            window.location.href = "${resolvedLink}";
-          }
-        </script>
+          // Fallback to the original link if Facebook app doesn't open
+          setTimeout(() => {
+            console.log("Redirecting to the original Facebook link as fallback...");
+            window.location.href = resolvedLink;
+          }, 10000);
+        } else {
+          // Non-mobile platforms
+          console.log("Redirecting to the original Facebook link...");
+          window.location.href = resolvedLink;
+        }
+      </script>
       </head>
         <style>
             body {
