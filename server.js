@@ -98,52 +98,52 @@ app.get("/fb-link", (req, res) => {
   }
 
 
-        // HTML response with conditional redirection
-        res.send(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Redirecting...</title>
-          </head>
-          <body>
-            <script>
-              // Server-side injected variables
-              const isAndroid = ${JSON.stringify(isAndroid)};
-              const isIOS = ${JSON.stringify(isIOS)};
-              const isFacebookApp = ${JSON.stringify(isFacebookApp)};
-              const resolvedLink = "${resolvedLink}";
-              const facebookAppLink = "${facebookAppLink}";
-      
-              if ((isAndroid || isIOS) && !isFacebookApp) {
-                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      
-                if (/Instagram/i.test(userAgent)) {
-                  console.log("Instagram in-app browser detected. Prompting user...");
-                  document.body.innerHTML = \`
-                    <p>Åpne denne lenken i en nettleser for å fortsette:</p>
-                    <a href="\${resolvedLink}" target="_blank">\${resolvedLink}</a>
-                  \`;
-                } else {
-                  // Attempt to redirect to Facebook app
-                  setTimeout(function () {
-                    console.log("Attempting to redirect to the Facebook app...");
-                    window.location.href = facebookAppLink;
-                  }, 1000);
-      
-                  // Fallback to the original link if the Facebook app does not open
-                  setTimeout(function () {
-                    console.log("Redirecting to the original Facebook link as fallback...");
-                    window.location.href = resolvedLink;
-                  }, 10000);
-                }
+  // HTML response with conditional redirection
+  res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Redirecting...</title>
+        </head>
+        <body>
+          <script>
+            // Server-side injected variables
+            const isAndroid = ${JSON.stringify(isAndroid)};
+            const isIOS = ${JSON.stringify(isIOS)};
+            const isFacebookApp = ${JSON.stringify(isFacebookApp)};
+            const resolvedLink = "${resolvedLink}";
+            const facebookAppLink = "${facebookAppLink}";
+    
+            if ((isAndroid || isIOS) && !isFacebookApp) {
+              const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    
+              if (/Instagram/i.test(userAgent)) {
+                console.log("Instagram in-app browser detected. Prompting user...");
+                document.body.innerHTML = \`
+                  <p>Åpne denne lenken i en nettleser for å fortsette:</p>
+                  <a href="\${resolvedLink}" target="_blank">\${resolvedLink}</a>
+                \`;
               } else {
-                console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
-                window.location.href = resolvedLink;
+                // Attempt to redirect to Facebook app
+                setTimeout(function () {
+                  console.log("Attempting to redirect to the Facebook app...");
+                  window.location.href = facebookAppLink;
+                }, 1000);
+    
+                // Fallback to the original link if the Facebook app does not open
+                setTimeout(function () {
+                  console.log("Redirecting to the original Facebook link as fallback...");
+                  window.location.href = resolvedLink;
+                }, 10000);
               }
-            </script>
-          </body>
-        </html>
-      `);
+            } else {
+              console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
+              window.location.href = resolvedLink;
+            }
+          </script>
+        </body>
+      </html>
+    `);
 
       </script>
       </head>
