@@ -94,6 +94,7 @@ app.get("/fb-link", (req, res) => {
 
   // URL-encode the resolved link for safe usage
   const encodedLink = encodeURIComponent(resolvedLink);
+  const facebookAppLink = `fb://facewebmodal/f?href=${encodedLink}`;
 
   // HTML response with conditional redirection
   res.send(`
@@ -110,20 +111,33 @@ app.get("/fb-link", (req, res) => {
           const isFacebookApp = ${isFacebookApp};
 
           if ((isAndroid || isIOS) && !isFacebookApp) {
-            setTimeout(() => {
-              console.log("Attempting to redirect to the Facebook app...");
-              window.location.href = "${facebookAppLink}";
-            }, 1000);
+          const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
-            setTimeout(() => {
-              console.log("Redirecting to the original Facebook link as fallback...");
-              window.location.href = "${resolvedLink}";
-            }, 10000);
+              if (/Instagram/i.test(userAgent)) {
+                console.log("Instagram in-app browser detected. Prompting user...");
+                document.body.innerHTML = `
+                  <p>Åpne denne lenken i en nettleser for å fortsette:</p>
+                  <a href="${resolvedLink}" target="_blank">${resolvedLink}</a>
+                `;
+              } else {
+                // Attempt to redirect to Facebook app
+                setTimeout(() => {
+                  console.log("Attempting to redirect to the Facebook app...");
+                  window.location.href = `${facebookAppLink}`;
+                }, 1000);
             
-          } else {
-            console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
-            window.location.href = "${resolvedLink}";
-          }
+                // Fallback to the original link if the Facebook app does not open
+                setTimeout(() => {
+                  console.log("Redirecting to the original Facebook link as fallback...");
+                  window.location.href = `${resolvedLink}`;
+                }, 10000);
+              }
+
+        } else {
+          console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
+          window.location.href = `${resolvedLink}`;
+        }
+
         </script>
       </head>
         <style>
