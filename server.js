@@ -70,31 +70,33 @@ app.get("/fb-link", (req, res) => {
   const isAndroid = /Android/i.test(userAgent);
   const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
   const isFacebookApp = /FBAV|FBAN/i.test(userAgent); // Checks if it's Facebook App
-
-  // Dynamically construct Facebook deep link based on the resolved link
+  
+  // Dynamically construct the Facebook deep link based on the resolved link
   let facebookAppLink;
   if (resolvedLink.includes("/events/")) {
+    // Event-specific deep link
     facebookAppLink = resolvedLink.replace(
       "https://facebook.com/events/",
       "fb://event/"
     );
   } else if (resolvedLink.includes("/groups/")) {
+    // Group-specific deep link
     facebookAppLink = resolvedLink.replace(
       "https://facebook.com/groups/",
       "fb://group/"
     );
   } else if (resolvedLink.includes("/pages/")) {
+    // Page-specific deep link
     facebookAppLink = resolvedLink.replace(
       "https://facebook.com/pages/",
       "fb://page/"
     );
   } else {
-    facebookAppLink = resolvedLink.replace("https://facebook.com", "fb://");
+    // Generic fallback deep link
+    const encodedLink = encodeURIComponent(resolvedLink); // URL-encode the resolved link
+    facebookAppLink = `fb://facewebmodal/f?href=${encodedLink}`;
   }
 
-  // URL-encode the resolved link for safe usage
-  const encodedLink = encodeURIComponent(resolvedLink);
-  const facebookAppLink = `fb://facewebmodal/f?href=${encodedLink}`;
 
   // HTML response with conditional redirection
   res.send(`
