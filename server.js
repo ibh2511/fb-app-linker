@@ -97,87 +97,86 @@ app.get("/fb-link", (req, res) => {
 
   // HTML response with conditional redirection
   res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
+      <!DOCTYPE html>
+      <html lang="en">
       <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Redirecting...</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-          }
-          a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-          }
-          a:hover {
-            text-decoration: underline;
-          }
-          .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin-top: 20px;
-            background-color: #007bff;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-          }
-          .button:hover {
-            background-color: #0056b3;
-          }
-        </style>
-      </head>
-      <body>
-        <script>
-          const isAndroid = ${JSON.stringify(isAndroid)};
-          const isIOS = ${JSON.stringify(isIOS)};
-          const isFacebookApp = ${JSON.stringify(isFacebookApp)};
-          const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-          const resolvedLink = "${resolvedLink}";
-          const facebookAppLink = "${facebookAppLink}";
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Redirecting...</title>
+          
+          <script>
+            const isAndroid = ${isAndroid};
+            const isIOS = ${isIOS};
+            const isFacebookApp = ${isFacebookApp};
   
-          if (/Instagram/i.test(userAgent)) {
-            // Instagram in-app browser detected
-            document.body.innerHTML = \`
-              <p>Du er i Instagram-appen.</p>
-              <p>Trykk på en av lenkene nedenfor for å åpne:</p>
-              <a href="\${facebookAppLink}" class="button">Åpne i Facebook-appen</a>
-              <br />
-              <a href="\${resolvedLink}" target="_blank" class="button">Åpne i nettleseren</a>
-            \`;
-          } else if ((isAndroid || isIOS) && !isFacebookApp) {
-            // Redirect to the Facebook app
-            setTimeout(() => {
-              console.log("Attempting to redirect to the Facebook app...");
-              window.location.href = facebookAppLink;
-            }, 100);
+            if ((isAndroid || isIOS) && !isFacebookApp) {
+              setTimeout(() => {
+                console.log("Attempting to redirect to the Facebook app...");
+                window.location.href = "${facebookAppLink}";
+              }, 100);
   
-            // Fallback to the original link if Facebook app doesn't open
-            setTimeout(() => {
-              console.log("Redirecting to the original Facebook link as fallback...");
-              window.location.href = resolvedLink;
-            }, 10000);
-          } else {
-            // Non-mobile platforms
-            console.log("Redirecting to the original Facebook link...");
-            window.location.href = resolvedLink;
-          }
-        </script>
-      </body>
-    </html>
-  `);
+              setTimeout(() => {
+                console.log("Redirecting to the original Facebook link as fallback...");
+                window.location.href = "${resolvedLink}";
+              }, 10000);
+            } else {
+              console.log("Non-mobile platform detected. Redirecting to the original Facebook link...");
+              window.location.href = "${resolvedLink}";
+            }
+          </script>
+        </head>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: #f9f9f9;
+                  color: #333;
+                  margin: 0;
+                  display: flex;
+                  flex-direction: column; /* Stack content vertically */
+                  justify-content: space-between; /* Space out content and footer */
+                  min-height: 100vh; /* Ensure body takes the full screen height */
+                  box-sizing: border-box;
+              }
+              .content {
+                  max-width: 800px; /* Limit content width */
+                  width: 90%; /* Ensure it adapts for smaller screens */
+                  margin: 20px auto 0; /* Add space on top, none on bottom */
+                  text-align: center;
+              }
+              h1 {
+                  color: #3b5998;
+                  font-size: 2.5em;
+                  margin-bottom: 20px;
+                  text-align: center;
+              }
+              p {
+                  font-size: 1.1em;
+                  line-height: 1.6;
+                  margin: 10px 0;
+                  text-align: center;
+              }
+              footer {
+                  margin-top: 20px;
+                  font-size: 0.9em;
+                  color: #666;
+                  text-align: center;
+              }
+          </style>
+  
+          <body>
+            <div class="content">
+  
+                <p>Du blir videresendt Facebook-appen hvis den støttes 🤖</p>
+                <p>Hvis ikke, blir du omdirigert til standard nettleser.</p>
+  
+                <footer>
+                    <!-- <p>Made by IBH 🌱</p> -->
+                </footer>
+            </div>
+        </body>
+        
+      </html>
+    `);
 });
 
 
